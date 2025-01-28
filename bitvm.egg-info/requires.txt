@@ -1,0 +1,7 @@
+bitcoin-utils
+cryptography
+pycryptodome
+pydantic
+python-bitcoinrpc
+python-dotenv
+requests
