@@ -35,7 +35,8 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 2. Install dependencies:
 
 ```
-pip install -e .```
+pip install -e .
+```
 
 3. Run the simple circuit example:
 
