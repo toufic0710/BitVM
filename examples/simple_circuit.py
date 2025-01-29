@@ -64,9 +64,19 @@ def main():
     responder = Responder()
     responder.set_circuit(circuit)
     
-    # Run verification
-    is_valid = challenger.verify_circuit(circuit, commitments)
-    print(f"Circuit verification: {is_valid}")
+    # Create a challenge for a specific gate
+    challenge = challenger.create_challenge(0)  # Challenge first gate
+
+    # Create a response
+    response = {
+        'gate_index': 0,
+        'inputs': [True, False],
+        'output': False
+    }
+
+    # Verify the response
+    is_valid = challenger.verify_response(response, challenge)
+    print(f"Response verification: {is_valid}")
 
 if __name__ == "__main__":
     main()

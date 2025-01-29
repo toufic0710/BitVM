@@ -1,6 +1,7 @@
 import pytest
 from src.circuits.circuit import Circuit
 from src.circuits.basic_gates import Wire, ANDGate, NOTGate
+from src.protocol.challenger import Challenger, Challenge
 
 def create_test_circuit() -> Circuit:
     circuit = Circuit()
@@ -48,3 +49,54 @@ def test_nand_truth_table():
         circuit.set_inputs(inputs)
         outputs = circuit.evaluate()
         assert outputs[0] == expected_output, f"Failed for inputs {inputs}"
+
+def test_challenger_verification():
+    """Test the challenger verification system"""
+    circuit = create_test_circuit()
+    challenger = Challenger()
+    
+    # Test with valid response
+    challenge = challenger.create_challenge(0)  # Challenge AND gate
+    valid_response = {
+        'gate_index': 0,
+        'inputs': [True, False],
+        'output': False
+    }
+    assert challenger.verify_response(valid_response, challenge)
+    
+    # Test with invalid gate index
+    invalid_response = {
+        'gate_index': 1,  # Wrong gate index
+        'inputs': [True, False],
+        'output': False
+    }
+    assert not challenger.verify_response(invalid_response, challenge)
+    
+    # Test with invalid input types
+    invalid_types_response = {
+        'gate_index': 0,
+        'inputs': [1, 0],  # Should be boolean
+        'output': False
+    }
+    assert not challenger.verify_response(invalid_types_response, challenge)
+
+def test_circuit_verification():
+    """Test complete circuit verification"""
+    circuit = create_test_circuit()
+    challenger = Challenger()
+    
+    # Set inputs and evaluate
+    circuit.set_inputs([True, False])
+    circuit.evaluate()
+    
+    # Verify entire circuit
+    assert challenger.verify_circuit(circuit, {})  # Empty commitments for now
+
+def test_challenge_creation():
+    """Test challenge creation"""
+    challenger = Challenger()
+    challenge = challenger.create_challenge(0)
+    
+    assert challenge.gate_index == 0
+    assert challenge.expected_output is None
+    assert isinstance(challenge.input_values, list)
